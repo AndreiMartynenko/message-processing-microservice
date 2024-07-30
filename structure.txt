@@ -1,0 +1,16 @@
+message-processing-microservice/
+├── .github/workflows/ci.yaml
+├── cmd/kafka/
+│   └── consumer/main.go
+    └── producer/main.go
+├── Dockerfile
+├── docker-compose.yml
+├── main.go
+├── go.mod
+├── go.sum
+├── README.md
+├── Makefile
+└── src/
+    ├── kafka.go
+    ├── postgres.go
+    └── handler.go
