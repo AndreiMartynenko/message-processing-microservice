@@ -1,62 +1,72 @@
-version: '3.8'
-
+#obsolete
+#version: '3.8'
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.1
-    hostname: zookeeper
-    container_name: zookeeper
-    ports:
-      - "2181:2181" # port for client connections Zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181 # port for client connections Zookeeper
-      ZOOKEEPER_TICK_TIME: 2000 # the length of a single tick in milliseconds used by Zookeeper
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.1
-    hostname: kafka
-    container_name: kafka
-    depends_on:
-      - zookeeper # indicates that the Kafka container depends on the Zookeeper and will start after it
-    ports:
-      - "9092:9092" # port for client connections Kafka
-    environment:
-      KAFKA_BROKER_ID: 1 # unique broker ID for Kafka
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181' # Zookeeper connection string
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT # Kafka listener security protocol
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092 # Kafka listener
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # replication factor for the offsets topic
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 # delay in milliseconds before the initial consumer group rebalance
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 # minimum number of in-sync replicas for the transaction state log
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 # replication factor for the transaction state log
-
-  kafka_ui:
-    container_name: kafka_ui
-    image: provectuslabs/kafka-ui:v0.7.2
-    ports:
-      - "8082:8080" # port for client connections Kafka UI
-    environment:
-      DYNAMIC_CONFIG_ENABLED: true # enable dynamic configuration
-
   postgres:
     image: postgres:14
     container_name: postgres
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: m-user
       POSTGRES_PASSWORD: m-password
       POSTGRES_DB: messages
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka
+    depends_on:
+      - zookeeper
     ports:
-      - "5432:5432" # port for client connections PostgreSQL
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - app-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - app-network
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka_ui
+    ports:
+      - "8082:8080"
+    environment:
+      DYNAMIC_CONFIG_ENABLED: true
+    networks:
+      - app-network
 
   my-app:
     image: my-app
+    container_name: my_app
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgres://m-user:m-password@postgres:5432/messages
+      KAFKA_BROKER: kafka:9092
     depends_on:
       - postgres
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USER: m-user
-      DB_PASSWORD: m-password
-      DB_NAME: messages
-      KAFKA_BROKER: kafka:9092
-    ports:
-      - "8080:8080" # port for client connections My App
+      - kafka
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

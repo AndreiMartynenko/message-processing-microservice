@@ -15,5 +15,4 @@ message-processing-microservice/
 ├── README.md
 ├── Makefile
 └── src/
-    ├── postgres.go
-    └── handler.go
+    └── handlers.go

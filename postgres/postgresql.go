@@ -12,6 +12,13 @@ import (
 var Db *sql.DB
 
 func InitDB() (*sql.DB, error) {
+
+	fmt.Println("DB_USER:", os.Getenv("DB_USER"))
+	fmt.Println("DB_PASSWORD:", os.Getenv("DB_PASSWORD"))
+	fmt.Println("DB_NAME:", os.Getenv("DB_NAME"))
+	fmt.Println("DB_HOST:", os.Getenv("DB_HOST"))
+	fmt.Println("DB_PORT:", os.Getenv("DB_PORT"))
+
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),
