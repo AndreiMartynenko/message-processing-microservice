@@ -4,6 +4,9 @@ message-processing-microservice/
 │   └── consumer/main.go
     └── producer/main.go
     ├── kafka.go
+├── postgres
+│   └── raw_query.go
+    └── postgresql.go
 ├── Dockerfile
 ├── docker-compose.yml
 ├── main.go

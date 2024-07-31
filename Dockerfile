@@ -26,16 +26,18 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o ./bin/consumer cmd/kafka/consumer/main.go
-RUN go build -o ./bin/producer cmd/kafka/producer/main.go
-
+#RUN go build -o ./bin/consumer cmd/kafka/consumer/main.go
+#RUN go build -o ./bin/producer cmd/kafka/producer/main.go
+RUN go build -o ./main.go
 
 FROM alpine:latest
 
-WORKDIR /root/
+#WORKDIR /root/
 
-COPY --from=builder /app/bin/consumer .
-COPY --from=builder /app/bin/producer .
+#COPY --from=builder /app/bin/consumer .
+#COPY --from=builder /app/bin/producer .
 
-ENTRYPOINT ["/root/consumer"]
+COPY --from=builder /app/main /main
+
+ENTRYPOINT ["/main"]
 

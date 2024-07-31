@@ -3,10 +3,11 @@ package src
 import (
 	"encoding/json"
 	"github.com/AndreiMartynenko/message-processing-microservice/cmd/kafka"
+	"github.com/AndreiMartynenko/message-processing-microservice/postgres"
 	"net/http"
 )
 
-func handlePostMessage(w http.ResponseWriter, r *http.Request) {
+func HandlePostMessage(w http.ResponseWriter, r *http.Request) {
 	var msg struct {
 		Content string `json:"content"`
 	}
@@ -16,7 +17,7 @@ func handlePostMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.Exec(InsertMessage, msg.Content)
+	_, err := postgres.db.Exec(postgres.InsertMessage, msg.Content)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -30,8 +31,8 @@ func handlePostMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleGetStatistics(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query(GetStatistics)
+func HandleGetStatistics(w http.ResponseWriter, r *http.Request) {
+	rows, err := postgres.db.Query(postgres.GetStatistics)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

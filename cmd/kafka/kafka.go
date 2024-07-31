@@ -4,7 +4,7 @@ import (
 	"github.com/IBM/sarama"
 )
 
-func newSyncProducer(brokerList []string) (sarama.SyncProducer, error) {
+func NewSyncProducer(brokerList []string) (sarama.SyncProducer, error) {
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	config.Producer.Retry.Max = 5
@@ -18,7 +18,7 @@ func newSyncProducer(brokerList []string) (sarama.SyncProducer, error) {
 }
 
 func SendMessageToKafka(topic string, message string) error {
-	producer, err := newSyncProducer([]string{"localhost:9092"})
+	producer, err := NewSyncProducer([]string{"localhost:9092"})
 	if err != nil {
 		return err
 	}

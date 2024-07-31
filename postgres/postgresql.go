@@ -1,4 +1,4 @@
-package src
+package postgres
 
 import (
 	"database/sql"
@@ -11,7 +11,7 @@ import (
 
 var db *sql.DB
 
-func initDB() (*sql.DB, error) {
+func InitDB() (*sql.DB, error) {
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		os.Getenv("DB_USER"),
 		os.Getenv("DB_PASSWORD"),

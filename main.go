@@ -1,44 +1,28 @@
-//package main
-//
-//import (
-//	"github.com/AndreiMartynenko/message-processing-microservice/src"
-//	"log"
-//	"net/http"
-//)
-//
-//func main() {
-//	// Initialize Kafka and PostgreSQL clients
-//	src.InitializeKafka()
-//	src.InitializePostgres()
-//
-//	// Set up HTTP routes
-//	http.HandleFunc("/messages", src.MessageHandler)
-//	http.HandleFunc("/stats", src.StatsHandler)
-//
-//	// Start the server
-//	log.Println("Starting server on :8080")
-//	log.Fatal(http.ListenAndServe(":8080", nil))
-//}
-
 package main
 
 import (
+	"database/sql"
+	"github.com/AndreiMartynenko/message-processing-microservice/cmd/kafka"
+	"github.com/AndreiMartynenko/message-processing-microservice/postgres"
+	"github.com/AndreiMartynenko/message-processing-microservice/src"
+	"github.com/IBM/sarama"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"github.com/AndreiMartynenko/message-processing-microservice/src"
-
-	"github.com/gorilla/mux"
 )
+
+var db *sql.DB
+var kafkaProducer sarama.SyncProducer
 
 func main() {
 	var err error
-	db, err = initDB()
+	db, err = postgres.InitDB()
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
-	kafkaProducer, err = initKafka()
+	kafkaProducer, err = kafka.NewSyncProducer([]string{"localhost:9092"})
 	if err != nil {
 		log.Fatalf("Failed to connect to Kafka: %v", err)
 	}
@@ -47,8 +31,8 @@ func main() {
 	router := mux.NewRouter()
 
 	// Define the API routes
-	router.HandleFunc("/messages", src.handlePostMessage).Methods("POST")
-	router.HandleFunc("/statistics", src.handleGetStatistics).Methods("GET")
+	router.HandleFunc("/messages", src.HandlePostMessage).Methods("POST")
+	router.HandleFunc("/statistics", src.HandleGetStatistics).Methods("GET")
 
 	// Start the server
 	log.Println("Starting server on :8080")
