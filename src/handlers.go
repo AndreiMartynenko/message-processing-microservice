@@ -17,7 +17,7 @@ func HandlePostMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := postgres.db.Exec(postgres.InsertMessage, msg.Content)
+	_, err := postgres.Db.Exec(postgres.InsertMessage, msg.Content)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -32,7 +32,7 @@ func HandlePostMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetStatistics(w http.ResponseWriter, r *http.Request) {
-	rows, err := postgres.db.Query(postgres.GetStatistics)
+	rows, err := postgres.Db.Query(postgres.GetStatistics)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
