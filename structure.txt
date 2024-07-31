@@ -3,6 +3,7 @@ message-processing-microservice/
 ├── cmd/kafka/
 │   └── consumer/main.go
     └── producer/main.go
+    ├── kafka.go
 ├── Dockerfile
 ├── docker-compose.yml
 ├── main.go
@@ -11,6 +12,5 @@ message-processing-microservice/
 ├── README.md
 ├── Makefile
 └── src/
-    ├── kafka.go
     ├── postgres.go
     └── handler.go

@@ -5,6 +5,8 @@ go 1.21.7
 require (
 	github.com/IBM/sarama v1.43.2
 	github.com/brianvoe/gofakeit v3.18.0+incompatible
+	github.com/gorilla/mux v1.8.1
+	github.com/lib/pq v1.10.9
 )
 
 require (

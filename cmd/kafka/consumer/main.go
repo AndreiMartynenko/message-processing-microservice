@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"github.com/IBM/sarama"
@@ -24,7 +24,7 @@ func main() {
 	consumeMessages(consumer, topicName)
 }
 
-func newConsumer(brokerList []string) (*sarama.Consumer, error) {
+func newConsumer(brokerList []string) (sarama.Consumer, error) {
 	config := sarama.NewConfig()
 	config.Consumer.Return.Errors = true
 
