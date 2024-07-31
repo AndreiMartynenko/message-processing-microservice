@@ -1,45 +1,3 @@
-#version: '3.8'
-#services:
-#  zookeeper:
-#    image: confluentinc/cp-zookeeper:7.6.1
-#    hostname: zookeeper
-#    container_name: zookeeper
-#    ports:
-#      - "2181:2181" # port for client connections Zookeeper
-#    environment:
-#        ZOOKEEPER_CLIENT_PORT: 2181 # port for client connections Zookeeper
-#        ZOOKEEPER_TICK_TIME: 2000 # the length of a single tick in milliseconds used by Zookeeper
-#
-#  kafka:
-#    image: confluentinc/cp-kafka:7.6.1
-#    hostname: kafka
-#    container_name: kafka
-#    depends_on:
-#      - zookeeper # indicates that the Kafka container depends on the Zookeeper and will start after it
-#    ports:
-#      - "9092:9092" # port for client connections Kafka
-#    environment:
-#        KAFKA_BROKER_ID: 1 # unique broker ID for Kafka
-#        KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181' # Zookeeper connection string
-#        KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT # Kafka listener security protocol
-#        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092, PLAINTEXT_HOST://localhost:9092 # Kafka listener
-#        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 # replication factor for the offsets topic
-#        KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0 # delay in milliseconds before the initial consumer group rebalance
-#        KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 # minimum number of in-sync replicas for the transaction state log
-#        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 # replication factor for the transaction state log
-#
-#  kafka_ui:
-#    container_name: kafka_ui
-#    image: provectuslabs/kafka-ui:v0.7.2
-#    ports:
-#      - "8082:8080" # port for client connections Kafka UI
-#    environment:
-#      DYNAMIC_CONFIG_ENABLED: true # enable dynamic configuration
-#
-#
-#
-
-
 version: '3.8'
 
 services:
@@ -89,17 +47,16 @@ services:
     ports:
       - "5432:5432" # port for client connections PostgreSQL
 
-  app:
-    build: .
+  my-app:
+    image: my-app
     depends_on:
-      - kafka
       - postgres
-    ports:
-      - "8080:8080" # port for client connections your app
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: m-user
       DB_PASSWORD: m-password
       DB_NAME: messages
-      KAFKA_BROKER: kafka:29092
+      KAFKA_BROKER: kafka:9092
+    ports:
+      - "8080:8080" # port for client connections My App
